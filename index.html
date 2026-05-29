@@ -1,35 +1,424 @@
-處芳間 Shoho Room
-精油劑量計算器
-
-基底設定
-
-＋ 新增基底
-
-新增自定義基底類型
-類型名稱
-建議用量說明
-類型標籤
-            植物油
-            酒精
-            基底類
-            其他
-          
-儲存
-精油配方（等比放大）
-
-正在載入精油庫存...
-成本彙整
-精油成本
-請先在上方填入精油配方
-
-基底原料成本
-請先在上方設定基底
-
-包材與定價
-包材容器費用（元）
-定價（元）
-保存配方
-配方名稱
-📋 保存配方
-已保存配方
-尚未保存任何配方
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>處芳間 精油劑量計算器</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+TC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--sage:#7a8c72;--sage-light:#a8b8a0;--sage-pale:#e8ede5;--cream:#f5f0e8;--warm-brown:#6b5344;--text:#2c2c2c;--text-muted:#7a7068;--border:#d4cfc6;--white:#fefcf8;--red:#c0392b}
+body{font-family:'Noto Serif TC',serif;background:var(--cream);color:var(--text);min-height:100vh;padding:32px 16px}
+.container{max-width:720px;margin:0 auto}
+.header{text-align:center;margin-bottom:40px}
+.header-eyebrow{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--sage);letter-spacing:.15em;margin-bottom:6px}
+.header h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:32px;color:var(--warm-brown);letter-spacing:.05em}
+.header-line{width:40px;height:1px;background:var(--sage-light);margin:12px auto 0}
+.card{background:var(--white);border:1px solid var(--border);border-radius:2px;padding:28px;margin-bottom:16px}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--sage);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--sage-pale)}
+.field{margin-bottom:16px}
+label{display:block;font-size:12px;letter-spacing:.06em;color:var(--text-muted);margin-bottom:6px}
+input[type=number],input[type=text],select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:2px;background:var(--cream);font-family:'Noto Serif TC',serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--sage)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--sage);font-size:11px;pointer-events:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:2px;font-family:'Noto Serif TC',serif;font-size:12px;cursor:pointer;transition:all .2s;border:none}
+.btn-ghost{background:none;border:1px solid var(--sage-light);color:var(--sage)}
+.btn-ghost:hover{background:var(--sage-pale)}
+.btn-primary{background:var(--warm-brown);color:var(--white);width:100%;justify-content:center;padding:13px;font-size:13px;margin-top:8px}
+.btn-primary:hover{background:#5a4437}
+.btn-remove{width:32px;height:32px;border:1px solid var(--border);background:none;border-radius:2px;cursor:pointer;color:var(--text-muted);font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.btn-remove:hover{border-color:var(--red);color:var(--red)}
+.base-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:12px}
+.base-hint{font-size:11px;color:var(--text-muted);margin-top:4px;font-style:italic}
+.add-base-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-top:10px;padding:14px;background:var(--sage-pale);border-radius:2px}
+.section-label{font-size:11px;letter-spacing:.1em;color:var(--sage);text-transform:uppercase;margin-bottom:8px;margin-top:4px}
+.oil-header{display:grid;grid-template-columns:1fr 90px 90px auto;gap:10px;margin-bottom:6px}
+.oil-header span{font-size:10px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase}
+.oil-row{display:grid;grid-template-columns:1fr 90px 90px auto;gap:10px;align-items:start;margin-bottom:10px}
+.oil-result{background:var(--sage-pale);border:1px solid var(--sage-light);border-radius:2px;padding:8px;text-align:center}
+.oil-result-drops{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--warm-brown)}
+.oil-result-ml{font-size:10px;color:var(--text-muted);margin-top:2px}
+.scale-box{background:var(--sage-pale);border:1px solid var(--sage-light);border-radius:2px;padding:16px;margin-top:12px}
+.scale-title{font-size:11px;letter-spacing:.12em;color:var(--sage);text-transform:uppercase;margin-bottom:10px}
+.scale-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.05)}
+.scale-row:last-child{border-bottom:none;font-weight:500;color:var(--warm-brown);margin-top:4px}
+.scale-ml{font-size:11px;color:var(--text-muted);margin-left:6px}
+.divider{height:1px;background:var(--sage-pale);margin:16px 0}
+.cost-section-label{font-size:11px;letter-spacing:.1em;color:var(--sage);text-transform:uppercase;margin-bottom:8px}
+.cost-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.cost-row:last-child{border-bottom:none}
+.cost-label{color:var(--text-muted)}
+.cost-value{color:var(--text);font-family:'Cormorant Garamond',serif;font-size:15px}
+.cost-value.na{color:var(--text-muted);font-size:12px;font-family:'Noto Serif TC',serif}
+.cost-total{font-size:15px;font-weight:500;color:var(--warm-brown);margin-top:8px;padding-top:8px;border-top:1px solid var(--sage-light);display:flex;justify-content:space-between}
+.profit-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:13px}
+.profit-good{color:#2e7d32}
+.profit-bad{color:var(--red)}
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+.loading-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);padding:8px 0}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--warm-brown);color:var(--white);padding:10px 22px;border-radius:2px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.saved-item{padding:14px;border:1px solid var(--border);border-radius:2px;margin-bottom:8px;background:var(--cream)}
+.saved-item-header{display:flex;justify-content:space-between;margin-bottom:4px}
+.saved-item-name{font-size:13px;color:var(--warm-brown)}
+.saved-item-date{font-size:11px;color:var(--text-muted)}
+.saved-item-detail{font-size:11px;color:var(--text-muted);line-height:1.8}
+.empty-state{text-align:center;padding:28px;color:var(--text-muted);font-size:13px;font-style:italic}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:480px){
+  .base-row,.add-base-row{grid-template-columns:1fr 1fr}
+  .oil-row,.oil-header{grid-template-columns:1fr 80px 80px auto}
+  .row2{grid-template-columns:1fr}
+}
+</style>
+</head><body>
+<div class="container">
+  <div class="header">
+    <p class="header-eyebrow">處芳間 Shoho Room</p>
+    <h1>精油劑量計算器</h1>
+    <div class="header-line"></div>
+  </div>
+  <div class="card">
+    <p class="card-title">基底設定</p>
+    <div id="bases-list"></div>
+    <button class="btn btn-ghost" onclick="addBase()" style="margin-top:8px">＋ 新增基底</button>
+    <div class="divider"></div>
+    <p class="section-label">新增自定義基底類型</p>
+    <div class="add-base-row">
+      <div class="field" style="margin:0">
+        <label>類型名稱</label>
+        <input type="text" id="new-base-name" placeholder="例：玫瑰果油">
+      </div>
+      <div class="field" style="margin:0">
+        <label>建議用量說明</label>
+        <input type="text" id="new-base-hint" placeholder="例：建議用量 10-30%">
+      </div>
+      <div class="field" style="margin:0">
+        <label>類型標籤</label>
+        <div class="select-wrap">
+          <select id="new-base-tag">
+            <option value="oil">植物油</option>
+            <option value="alcohol">酒精</option>
+            <option value="base">基底類</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="saveNewBaseType()" style="height:40px;margin-bottom:0">儲存</button>
+    </div>
+  </div>
+  <div class="card">
+    <p class="card-title">精油配方（等比放大）</p>
+    <div id="oil-loading" class="loading-row">
+      <div class="spinner"></div>
+      <span>正在載入精油庫存...</span>
+    </div>
+    <div id="oil-section" style="display:none">
+      <div class="row2" style="margin-bottom:16px">
+        <div class="field">
+          <label>測試配方容量（ml）</label>
+          <input type="number" id="test-ml" min="0" step="0.5" placeholder="例：10" oninput="calcScale()">
+        </div>
+        <div class="field">
+          <label>目標製作量（ml）</label>
+          <input type="number" id="target-ml" min="0" step="1" placeholder="例：100" oninput="calcScale()">
+        </div>
+      </div>
+      <div class="oil-header">
+        <span>精油名稱</span>
+        <span>測試滴數</span>
+        <span>放大後</span>
+        <span></span>
+      </div>
+      <div id="oils-list"></div>
+      <button class="btn btn-ghost" id="btn-add-oil" onclick="addOil()" style="margin-top:4px">＋ 新增精油</button>
+      <div class="scale-box" id="scale-box" style="display:none">
+        <p class="scale-title">放大結果（倍數 × <span id="scale-ratio">1</span>）</p>
+        <div id="scale-rows"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <p class="card-title">成本彙整</p>
+    <div class="cost-section-label">精油成本</div>
+    <div id="cost-oils-rows"><p style="font-size:12px;color:var(--text-muted);font-style:italic">請先在上方填入精油配方</p></div>
+    <div class="divider"></div>
+    <div class="cost-section-label">基底原料成本</div>
+    <div id="cost-base-rows"><p style="font-size:12px;color:var(--text-muted);font-style:italic">請先在上方設定基底</p></div>
+    <div class="divider"></div>
+    <div class="cost-section-label">包材與定價</div>
+    <div class="row2">
+      <div class="field">
+        <label>包材容器費用（元）</label>
+        <input type="number" id="packaging-cost" min="0" step="1" placeholder="0" oninput="calcCost()">
+      </div>
+      <div class="field">
+        <label>定價（元）</label>
+        <input type="number" id="selling-price" min="0" step="1" placeholder="0" oninput="calcCost()">
+      </div>
+    </div>
+    <div id="cost-total-box" style="display:none">
+      <div class="cost-total">
+        <span>總成本</span>
+        <span id="total-cost-val">$0</span>
+      </div>
+      <div class="profit-row" id="profit-row" style="display:none">
+        <span style="color:var(--text-muted);font-size:12px">毛利率</span>
+        <span id="profit-val" class="profit-good">-</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <p class="card-title">保存配方</p>
+    <div class="field">
+      <label>配方名稱</label>
+      <input type="text" id="recipe-name" placeholder="例：舒壓按摩油">
+    </div>
+    <button class="btn btn-primary" onclick="saveRecipe()">📋 保存配方</button>
+  </div>
+  <div class="card">
+    <p class="card-title">已保存配方</p>
+    <div id="saved-list"><p class="empty-state">尚未保存任何配方</p></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const NOTION_TOKEN='ntn_I65679285721EDpSE2L1LbL5fPf5fBS00HC1il1gDlsftK';
+const OIL_DB='3501877aa2fc81ccafc6e0d4aba2cc24';
+const MAT_DB='36f1877aa2fc8127b4c1d7ea793adaba';
+const PROXY='https://corsproxy.io/?';
+let stockOils=[];
+let stockMats=[];
+let oils=[];
+let bases=[];
+let savedRecipes=JSON.parse(localStorage.getItem('shoho_recipes')||'[]');
+let baseTypes=JSON.parse(localStorage.getItem('shoho_base_types')||'null')||[
+  {id:'oil1',name:'基底油',hint:'',tag:'oil'},
+  {id:'alc1',name:'酒精',hint:'建議 70-95%',tag:'alcohol'},
+];
+async function loadNotion(){
+  try{
+    const r1=await fetch(PROXY+encodeURIComponent('https://api.notion.com/v1/databases/'+OIL_DB+'/query'),{
+      method:'POST',headers:{'Authorization':'Bearer '+NOTION_TOKEN,'Content-Type':'application/json','Notion-Version':'2022-06-28'},
+      body:JSON.stringify({page_size:100})
+    });
+    const d1=await r1.json();
+    if(d1.results){
+      stockOils=d1.results.map(r=>{
+        const t=r.properties?.['精油名稱']?.title||[];
+        const price=r.properties?.['購買價格']?.number||null;
+        const drops=r.properties?.['初始滴數']?.number||null;
+        return{name:t[0]?.plain_text||'',price,drops,costPerDrop:(price&&drops)?price/drops:null};
+      }).filter(o=>o.name);
+    }
+  }catch(e){stockOils=[];}
+  try{
+    const r2=await fetch(PROXY+encodeURIComponent('https://api.notion.com/v1/databases/'+MAT_DB+'/query'),{
+      method:'POST',headers:{'Authorization':'Bearer '+NOTION_TOKEN,'Content-Type':'application/json','Notion-Version':'2022-06-28'},
+      body:JSON.stringify({page_size:100})
+    });
+    const d2=await r2.json();
+    if(d2.results){
+      stockMats=d2.results.map(r=>{
+        const t=r.properties?.['原料名稱']?.title||[];
+        const price=r.properties?.['購買價格']?.number||null;
+        const vol=r.properties?.['購買容量']?.number||null;
+        return{name:t[0]?.plain_text||'',price,vol,costPerUnit:(price&&vol)?price/vol:null};
+      }).filter(m=>m.name);
+    }
+  }catch(e){stockMats=[];}
+  document.getElementById('oil-loading').style.display='none';
+  document.getElementById('oil-section').style.display='block';
+  if(oils.length===0)addOil();
+  renderBases();
+  calcCost();
+}
+function addBase(){
+  bases.push({typeId:baseTypes[0]?.id||'',ml:'',conc:''});
+  renderBases();
+}
+function removeBase(i){bases.splice(i,1);renderBases();calcCost();}
+function renderBases(){
+  const el=document.getElementById('bases-list');
+  if(bases.length===0){
+    el.innerHTML='<p style="font-size:12px;color:var(--text-muted);font-style:italic;padding:8px 0">尚未新增基底，請點下方按鈕</p>';
+    return;
+  }
+  el.innerHTML=bases.map((b,i)=>{
+    const bt=baseTypes.find(t=>t.id===b.typeId)||baseTypes[0];
+    const opts=baseTypes.map(t=>'<option value="'+t.id+'" '+(b.typeId===t.id?'selected':'')+'>'+t.name+'</option>').join('');
+    return '<div class="base-row">'
+      +'<div><label>基底類型</label><div class="select-wrap"><select onchange="bases['+i+'].typeId=this.value;renderBases();calcCost()">'+opts+'</select></div>'
+      +(bt&&bt.hint?'<p class="base-hint">'+bt.hint+'</p>':'')+'</div>'
+      +'<div><label>用量（ml）</label><input type="number" min="0" step="0.5" placeholder="例：30" value="'+b.ml+'" oninput="bases['+i+'].ml=this.value;calcCost()"></div>'
+      +'<div><label>濃度（%）</label><input type="number" min="0" max="100" step="0.1" placeholder="例：2" value="'+b.conc+'" oninput="bases['+i+'].conc=this.value;calcCost()"></div>'
+      +'<button class="btn-remove" onclick="removeBase('+i+')" style="margin-top:22px">×</button>'
+      +'</div>';
+  }).join('');
+}
+function saveNewBaseType(){
+  const name=document.getElementById('new-base-name').value.trim();
+  const hint=document.getElementById('new-base-hint').value.trim();
+  const tag=document.getElementById('new-base-tag').value;
+  if(!name){showToast('請輸入類型名稱');return;}
+  const id='custom_'+Date.now();
+  baseTypes.push({id,name,hint,tag});
+  localStorage.setItem('shoho_base_types',JSON.stringify(baseTypes));
+  document.getElementById('new-base-name').value='';
+  document.getElementById('new-base-hint').value='';
+  renderBases();
+  showToast('✓「'+name+'」已新增至基底選單');
+}
+function calcScale(){
+  const testMl=parseFloat(document.getElementById('test-ml').value)||0;
+  const targetMl=parseFloat(document.getElementById('target-ml').value)||0;
+  const ratio=testMl>0&&targetMl>0?targetMl/testMl:0;
+  document.getElementById('scale-ratio').textContent=ratio>0?ratio.toFixed(2):'1';
+  const box=document.getElementById('scale-box');
+  const rows=document.getElementById('scale-rows');
+  if(ratio<=0||oils.length===0){box.style.display='none';return;}
+  box.style.display='block';
+  let html='';let totalDrops=0;
+  oils.forEach(function(o,i){
+    const testDrops=parseFloat(document.getElementById('test-drops-'+i)?.value)||0;
+    const scaled=Math.round(testDrops*ratio);
+    const scaledMl=(scaled/20).toFixed(2);
+    totalDrops+=scaled;
+    html+='<div class="scale-row"><span>'+(o.name||'未命名')+'</span><span>'+scaled+' 滴 <span class="scale-ml">('+scaledMl+'ml)</span></span></div>';
+  });
+  const totalMl=(totalDrops/20).toFixed(2);
+  html+='<div class="scale-row"><span>總計</span><span>'+totalDrops+' 滴 <span class="scale-ml">('+totalMl+'ml)</span></span></div>';
+  rows.innerHTML=html;
+  calcCost();
+}
+function addOil(){oils.push({name:'',testDrops:0,showInput:false});renderOils();}
+function removeOil(i){oils.splice(i,1);renderOils();calcScale();}
+function onOilSelect(i,val){
+  if(val==='__new__'){oils[i].showInput=true;oils[i].name='';}
+  else{oils[i].name=val;oils[i].showInput=false;}
+  renderOils();calcScale();
+}
+async function confirmAddOilStock(i){
+  const input=document.getElementById('new-oil-'+i);
+  const name=input?.value?.trim();
+  if(!name){showToast('請先輸入名稱');return;}
+  oils[i].name=name;oils[i].showInput=false;
+  try{
+    await fetch(PROXY+encodeURIComponent('https://api.notion.com/v1/pages'),{
+      method:'POST',headers:{'Authorization':'Bearer '+NOTION_TOKEN,'Content-Type':'application/json','Notion-Version':'2022-06-28'},
+      body:JSON.stringify({parent:{database_id:OIL_DB},properties:{'精油名稱':{title:[{text:{content:name}}]}}})
+    });
+    stockOils.push({name,price:null,drops:null,costPerDrop:null});
+    stockOils.sort(function(a,b){return a.name.localeCompare(b.name);});
+    showToast('✓「'+name+'」已新增至庫存');
+  }catch(e){showToast('× 新增失敗，請至 Notion 手動新增');}
+  renderOils();calcScale();
+}
+function renderOils(){
+  const list=document.getElementById('oils-list');
+  const hasStock=stockOils.length>0;
+  list.innerHTML=oils.map(function(o,i){
+    let nameHtml='';
+    if(hasStock){
+      const opts=stockOils.map(function(s){return'<option value="'+s.name+'" '+(o.name===s.name?'selected':'')+'>'+s.name+'</option>';}).join('');
+      nameHtml='<div class="select-wrap"><select onchange="onOilSelect('+i+',this.value)" style="font-size:13px;padding:10px 14px;border:1px solid var(--border);border-radius:2px;background:var(--cream);width:100%;appearance:none;-webkit-appearance:none;outline:none;"><option value="">— 選擇精油 —</option>'+opts+'<option value="__new__">＋ 新增精油至庫存</option></select></div>'
+        +(o.showInput?'<div style="margin-top:6px"><input type="text" id="new-oil-'+i+'" placeholder="輸入新精油名稱" style="width:100%;padding:9px 13px;border:1px solid var(--sage-light);border-radius:2px;background:var(--cream);font-size:13px;outline:none;"><p style="font-size:11px;color:var(--sage);margin-top:4px;cursor:pointer" onclick="confirmAddOilStock('+i+')">＋ 確認並新增至精油庫存</p></div>':'');
+    }else{
+      nameHtml='<input type="text" value="'+o.name+'" placeholder="精油名稱" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:2px;background:var(--cream);font-size:13px;outline:none;" oninput="oils['+i+'].name=this.value">';
+    }
+    return'<div class="oil-row"><div>'+nameHtml+'</div>'
+      +'<input type="number" id="test-drops-'+i+'" min="0" step="1" placeholder="滴數" value="'+(o.testDrops||'')+'" style="padding:10px 14px;border:1px solid var(--border);border-radius:2px;background:var(--cream);font-size:13px;outline:none;" oninput="oils['+i+'].testDrops=parseFloat(this.value)||0;calcScale()">'
+      +'<div class="oil-result" id="oil-result-'+i+'"><div class="oil-result-drops">—</div><div class="oil-result-ml"></div></div>'
+      +'<button class="btn-remove" onclick="removeOil('+i+')">×</button></div>';
+  }).join('');
+}
+function calcCost(){
+  const testMl=parseFloat(document.getElementById('test-ml')?.value)||0;
+  const targetMl=parseFloat(document.getElementById('target-ml')?.value)||0;
+  const ratio=testMl>0&&targetMl>0?targetMl/testMl:1;
+  let oilCostTotal=0;let oilHtml='';
+  oils.forEach(function(o,i){
+    const testDrops=parseFloat(document.getElementById('test-drops-'+i)?.value)||0;
+    const scaledDrops=Math.round(testDrops*ratio);
+    const stock=stockOils.find(function(s){return s.name===o.name;});
+    if(scaledDrops>0){
+      if(stock?.costPerDrop){
+        const cost=stock.costPerDrop*scaledDrops;
+        oilCostTotal+=cost;
+        oilHtml+='<div class="cost-row"><span class="cost-label">'+(o.name||'未命名')+' '+scaledDrops+'滴</span><span class="cost-value">$'+cost.toFixed(1)+'</span></div>';
+      }else{
+        oilHtml+='<div class="cost-row"><span class="cost-label">'+(o.name||'未命名')+' '+scaledDrops+'滴</span><span class="cost-value na">未設定價格</span></div>';
+      }
+    }
+  });
+  document.getElementById('cost-oils-rows').innerHTML=oilHtml||'<p style="font-size:12px;color:var(--text-muted);font-style:italic">請先在上方填入精油配方</p>';
+  let baseCostTotal=0;let baseHtml='';
+  bases.forEach(function(b){
+    const ml=parseFloat(b.ml)||0;
+    const bt=baseTypes.find(function(t){return t.id===b.typeId;});
+    const name=bt?.name||'未命名';
+    const mat=stockMats.find(function(m){return m.name===name;});
+    if(ml>0){
+      if(mat?.costPerUnit){
+        const cost=mat.costPerUnit*ml;
+        baseCostTotal+=cost;
+        baseHtml+='<div class="cost-row"><span class="cost-label">'+name+' '+ml+'ml</span><span class="cost-value">$'+cost.toFixed(1)+'</span></div>';
+      }else{
+        baseHtml+='<div class="cost-row"><span class="cost-label">'+name+' '+ml+'ml</span><span class="cost-value na">未設定價格</span></div>';
+      }
+    }
+  });
+  document.getElementById('cost-base-rows').innerHTML=baseHtml||'<p style="font-size:12px;color:var(--text-muted);font-style:italic">請先在上方設定基底</p>';
+  const packaging=parseFloat(document.getElementById('packaging-cost')?.value)||0;
+  const selling=parseFloat(document.getElementById('selling-price')?.value)||0;
+  const total=oilCostTotal+baseCostTotal+packaging;
+  document.getElementById('cost-total-box').style.display='block';
+  document.getElementById('total-cost-val').textContent='$'+total.toFixed(1);
+  const profitRow=document.getElementById('profit-row');
+  if(selling>0){
+    profitRow.style.display='flex';
+    const margin=((selling-total)/selling*100).toFixed(1);
+    const el=document.getElementById('profit-val');
+    el.textContent=margin+'%';
+    el.className='profit-'+(parseFloat(margin)>=30?'good':'bad');
+  }else{profitRow.style.display='none';}
+}
+function saveRecipe(){
+  const name=document.getElementById('recipe-name').value.trim();
+  if(!name){showToast('請輸入配方名稱');return;}
+  const recipe={
+    name,
+    bases:bases.map(function(b){const bt=baseTypes.find(function(t){return t.id===b.typeId;});return{name:bt?.name||'',ml:b.ml,conc:b.conc};}),
+    oils:oils.map(function(o,i){return{name:o.name,testDrops:parseFloat(document.getElementById('test-drops-'+i)?.value)||0};}),
+    testMl:document.getElementById('test-ml').value,
+    targetMl:document.getElementById('target-ml').value,
+    date:new Date().toLocaleDateString('zh-TW')
+  };
+  savedRecipes.unshift(recipe);
+  localStorage.setItem('shoho_recipes',JSON.stringify(savedRecipes));
+  renderSaved();
+  showToast('✓ 配方已保存');
+}
+function renderSaved(){
+  const list=document.getElementById('saved-list');
+  if(savedRecipes.length===0){list.innerHTML='<p class="empty-state">尚未保存任何配方</p>';return;}
+  list.innerHTML=savedRecipes.map(function(r){
+    return'<div class="saved-item"><div class="saved-item-header"><span class="saved-item-name">'+r.name+'</span><span class="saved-item-date">'+r.date+'</span></div>'
+      +'<div class="saved-item-detail">'+(r.bases?.map(function(b){return b.name+' '+b.ml+'ml';}).join('・')||'')+'<br>'
+      +(r.oils?.map(function(o){return o.name+' '+o.testDrops+'滴';}).join('・')||'')
+      +(r.targetMl?' → 放大至 '+r.targetMl+'ml':'')+'</div></div>';
+  }).join('');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2800);
+}
+loadNotion();
+renderSaved();
+renderBases();
+</script>
+</body>
+</html>
